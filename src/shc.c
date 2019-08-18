@@ -132,10 +132,10 @@ static char * opts;
 static char * text;
 static int verbose;
 static const char UID_line[] =
-"#define UID %s	/* Define with an id or "uid" or "euid" to call setuid(id) or setuid(getuid()) or setuid(geteuid()) at start of script */\n";
+"#define UID %s	/* Define with an id or 'uid' or 'euid' to call setuid(id) or setuid(getuid()) or setuid(geteuid()) at start of script */\n";
 static char * uid;
 static const char GID_line[] =
-"#define GID %s	/* Define with an id or "gid" or "egid"  to call setgid(id) or setgid(getgid()) or setgid(getegid()) at start of script */\n";
+"#define GID %s	/* Define with an id or 'gid' or 'egid'  to call setgid(id) or setgid(getgid()) or setgid(getegid()) at start of script */\n";
 static char * gid;
 static const char SETUID_line[] =
 "#define SETUID %d	/* Define as 1 to call setuid(0) at start of script */\n";
