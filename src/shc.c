@@ -68,7 +68,7 @@ static const char * abstract[] = {
 0};
 
 static const char usage[] = 
-"Usage: shc [-e date] [-m addr] [-i iopt] [-x cmnd] [-l lopt] [-o outfile] [-rvDSUHCABh] -f script";
+"Usage: shc [-e date] [-m addr] [-i iopt] [-x cmnd] [-l lopt] [-o outfile] [-u uid|auto] [-g gid|auto] [-rvDSUHCABh] -f script";
 
 static const char * help[] = {
 "",
@@ -767,7 +767,7 @@ static const char * RTC[] = {
 static int parse_an_arg(int argc, char * argv[])
 {
 	extern char * optarg;
-	const char * opts = "e:m:f:i:x:l:o:rvDSUHCABh";
+	const char * opts = "e:m:f:i:x:l:o:u:g:rvDSUHCABh";
 	struct tm tmp[1];
 	time_t expdate;
 	int cnt, l;
@@ -824,13 +824,13 @@ static int parse_an_arg(int argc, char * argv[])
 		break;
 	case 'S':
 		SETUID_flag = 1;
-    break;
+		break;
 	case 'u':
 		uid = optarg;
-    break;
+		break;
 	case 'g':
 		gid = optarg;
-    break;
+		break;
 	case 'D':
 		DEBUGEXEC_flag = 1;
 		break;
