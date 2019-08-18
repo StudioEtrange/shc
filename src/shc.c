@@ -834,13 +834,13 @@ static int parse_an_arg(int argc, char * argv[])
 		SETUID_flag = 1;
 		break;
 	case 'u':
-		if(strcmp(optarg,"euid") == 0) uid = "e";
-		else if(strcmp(optarg,"uid") == 0) uid = "r";
+		if(strcmp(optarg,"euid") == 0) uid = "'e'";
+		else if(strcmp(optarg,"uid") == 0) uid = "'r'";
 		else uid = optarg;
 		break;
 	case 'g':
-		if(strcmp(optarg,"egid") == 0) gid = "e";
-		else if(strcmp(optarg,"gid") == 0) gid = "r";
+		if(strcmp(optarg,"egid") == 0) gid = "'e'";
+		else if(strcmp(optarg,"gid") == 0) gid = "'r'";
 		else gid = optarg;
 		break;
 	case 'D':
