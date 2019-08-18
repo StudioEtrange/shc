@@ -82,8 +82,8 @@ static const char * help[] = {
 "    -r     Relax security. Make a redistributable binary",
 "    -v     Verbose compilation",
 "    -S     Switch ON setuid(0) for root callable programs [OFF]",
-"    -u %s  Use setuid(id) with the specified user id. If id is \"auto\" then current euid is used.",
-"    -g %s  Use setgid(id) with the specified group id. If id is \"auto\" then current egid is used.",
+"    -u %s  Use setuid(id) with the specified user id. If id is \"uid\" then getuid() is used, if id is \"euid\" then geteuid() is used.",
+"    -g %s  Use setgid(id) with the specified group id. If id is \"gid\" then getgid() is used, if id is \"egid\" then getegid() is used.",
 "    -D     Switch ON debug exec calls [OFF]",
 "    -U     Make binary untraceable [no]",
 "    -H     Hardening : extra security protection [no]",
@@ -132,10 +132,10 @@ static char * opts;
 static char * text;
 static int verbose;
 static const char UID_line[] =
-"#define UID %s	/* Define with an id or auto to call setuid(id) or setuid(geteuid()) at start of script */\n";
+"#define UID %s	/* Define with an id or "uid" or "euid" to call setuid(id) or setuid(getuid()) or setuid(geteuid()) at start of script */\n";
 static char * uid;
 static const char GID_line[] =
-"#define GID %s	/* Define with an id or auto to call setgid(id) or setgid(getegid()) at start of script */\n";
+"#define GID %s	/* Define with an id or "gid" or "egid"  to call setgid(id) or setgid(getgid()) or setgid(getegid()) at start of script */\n";
 static char * gid;
 static const char SETUID_line[] =
 "#define SETUID %d	/* Define as 1 to call setuid(0) at start of script */\n";
@@ -733,17 +733,25 @@ static const char * RTC[] = {
 "",
 "int main(int argc, char ** argv)",
 "{",
-"#if UID==auto",
-"   seteuid(getuid());",
-"#elif UID",
-"   seteuid(UID);",
-"#elif SETUID",
-"   setuid(0);",
+"#define EFFECTIVE_ID 'e'",
+"#define REGULAR_ID  'r'",
+"#define CHECK_EFFECTIVE(s) (s==EFFECTIVE_ID)",
+"#define CHECK_REGULAR(s) (s==REGULAR_ID)",
+"#if CHECK_REGULAR(GID)",
+"        setgid(getgid());",
+"#elif CHECK_EFFECTIVE(GID)",
+"        setgid(getegid());",
+"#elif defined GID",
+"        setgid(GID);",
 "#endif",
-"#if GID==auto",
-"   setegid(getgid());",
-"#elif GID",
-"   setegid(GID);",
+"#if CHECK_REGULAR(UID)",
+"        setuid(getuid());",
+"#elif CHECK_EFFECTIVE(UID)",
+"        setuid(geteuid());",
+"#elif defined UID",
+"        setuid(UID);",
+"#elif SETUID",
+"        setuid(0);",
 "#endif",
 "#if DEBUGEXEC",
 "	debugexec(\"main\", argc, argv);",
@@ -826,10 +834,14 @@ static int parse_an_arg(int argc, char * argv[])
 		SETUID_flag = 1;
 		break;
 	case 'u':
-		uid = optarg;
+		if(strcmp(optarg,"euid") == 0) uid = "e";
+		else if(strcmp(optarg,"uid") == 0) uid = "r";
+		else uid = optarg;
 		break;
 	case 'g':
-		gid = optarg;
+		if(strcmp(optarg,"egid") == 0) gid = "e";
+		else if(strcmp(optarg,"gid") == 0) gid = "r";
+		else gid = optarg;
 		break;
 	case 'D':
 		DEBUGEXEC_flag = 1;
